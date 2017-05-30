@@ -19,6 +19,8 @@ export class GraphQlRouter extends Router {
         );
         this.use(
             '/graphiql',
+            bodyParser.urlencoded({ extended: true }),
+            bodyParser.json(),
             graphiqlExpress({
                 endpointURL: '/graphql'
             })
