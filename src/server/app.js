@@ -1,9 +1,21 @@
 // @flow
 import express, { Router } from 'express';
 import type { $Application, $Request, $Response } from 'express';
+
+import { GraphQlRouter } from './graphql/router';
+
 export type AppParams = {
     pgPool: any
 };
+
+class StatusRouter extends Router {
+    constructor(options) {
+        super(options);
+        this.get('/', (request: $Request, response: $Response) => {
+            response.json({ ok: 1, date: new Date() });
+        });
+    }
+}
 
 export class App {
     app: $Application;
@@ -18,6 +30,8 @@ export class App {
             response.status(404).json({ error: 'NotFound' });
         });
         this.app.use('/api', apiRouter);
+        this.app.use('/status', new StatusRouter());
+        this.app.use(new GraphQlRouter());
         this.app.use(rootRouter);
         return this.app;
     }
