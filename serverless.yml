@@ -60,7 +60,7 @@ provider:
 
 functions:
   ProxyApiRoot:
-    handler: src/lambda.handler
+    handler: src/server/lambda.handler
     timeout: 60
     events:
       - http:
