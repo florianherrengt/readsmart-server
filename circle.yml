@@ -11,6 +11,7 @@ dependencies:
 test:
   override:
     - yarn run flow
+    - node src/server/lambda.js
 
 deployment:
   branch: master

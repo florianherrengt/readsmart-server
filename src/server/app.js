@@ -31,8 +31,8 @@ export class App {
         });
         this.app.use('/api', apiRouter);
         this.app.use('/status', new StatusRouter());
-        this.app.use(new GraphQlRouter());
-        this.app.use(rootRouter);
+        // this.app.use(new GraphQlRouter());
+        // this.app.use(rootRouter);
         return this.app;
     }
 }
