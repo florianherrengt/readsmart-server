@@ -3,6 +3,7 @@ import { merge } from 'lodash';
 import { development } from './development';
 import { production } from './production';
 import { test } from './test';
+import { local } from './local';
 
 export type Config = {
     postgres?: string,
@@ -13,7 +14,7 @@ export type Config = {
             lambda: string,
             s3: string
         },
-        config?: {
+        credentials?: {
             accessKeyId?: string,
             secretAccessKey?: string
         },

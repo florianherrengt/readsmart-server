@@ -19,7 +19,6 @@ const populator = new Populator({
 });
 
 populator({
-    type: 'reddit:javascript',
     url: 'https://leanpub.com/learnwebdevelopmentwithvegibit'
 })
     .then(() => {

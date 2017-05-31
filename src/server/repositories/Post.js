@@ -52,7 +52,7 @@ export class Post {
             posts.map(
                 ({ url }) =>
                     new Promise((resolve, reject) => {
-                        this.getByKey(`${type}/${md5(url)}`)
+                        this.getByKey(`${md5(url)}`)
                             .then(post =>
                                 resolve({ ...post, isLoading: false })
                             )

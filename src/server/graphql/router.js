@@ -13,7 +13,7 @@ import { Post as PostRepository } from '../repositories/Post';
 const postRepository = new PostRepository({ s3, agent });
 
 export class GraphQlRouter extends Router {
-    constructor(options: RouterOptions) {
+    constructor(options?: RouterOptions) {
         super(options);
 
         const context: Context = {
