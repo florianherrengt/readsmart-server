@@ -5,8 +5,17 @@ provider:
   runtime: nodejs6.10
   region: eu-west-2
 
+  iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - s3:GetObject
+        Resource: "arn:aws:s3:::${self:resources.Resources.postsBucket.Properties.BucketName}/*"
+
   environment:
+    NODE_ENV: ${self:provider.stage}
     BABEL_CACHE_PATH: "/tmp/babelcache"
+    POSTS_BUCKET: ${self:resources.Resources.postsBucket.Properties.BucketName}
+    REGION: ${self:provider.region}
 
 functions:
   ProxyApiRoot:
@@ -16,3 +25,10 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
+
+resources: 
+  Resources:
+    postsBucket:
+      Type: AWS::S3::Bucket
+      Properties: 
+        BucketName: ${self:service}-${self:provider.stage}-posts

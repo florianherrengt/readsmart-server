@@ -1,13 +1,13 @@
 // @flow
+import config from '../../config';
 import AWS from 'aws-sdk';
 
-AWS.config.update({
-    region: 'eu-west-2'
-});
+if (!config.aws) {
+    throw new Error('config.aws is required');
+}
 
-const iot = new AWS.Iot();
-const sts = new AWS.STS();
+AWS.config.apiVersions = config.aws.apiVersions;
 
-const iotRoleName = 'serverless-notifications';
-
-export { AWS, iot, sts, iotRoleName };
+export const s3 = new AWS.S3();
+export const iot = new AWS.Iot();
+export const sts = new AWS.STS();

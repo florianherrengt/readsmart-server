@@ -8,17 +8,26 @@ export const schema = [
         posts: [Post]
     }
     type Post {
+        # Key to fetch in S3
+        id: String
         # The title extracted from the post
         title: String
-        # Raw version text only of the post with line return
+        # First 3 sentences
+        short_text: String
+        # Long raw version text only of the post with line return
         text: String
         # Main image from the post
         image: String
         # When the post was inserted in the DB
         created_at: String
+        # Where this post is coming from
+        url: String
+        # True is this post has been sent to the queue to be processed
+        isLoading: Boolean
     }
     type Query {
-        redditPosts(sub: String!): PostResponse
+        redditPosts(sub: String!): PostResponse,
+        post(key: String!): Post
     }
     schema {
         query: Query

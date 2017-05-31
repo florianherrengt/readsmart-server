@@ -1,2 +1,5 @@
-import { schema, resolvers } from './reddit';
+// @flow
+import { schema } from './schema';
+import { resolvers } from './resolvers';
+
 export { schema, resolvers };
