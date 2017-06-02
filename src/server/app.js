@@ -1,6 +1,7 @@
 // @flow
 import express, { Router } from 'express';
 import type { $Application, $Request, $Response } from 'express';
+import cors from 'cors';
 
 import { GraphQlRouter } from './graphql/router';
 
@@ -21,6 +22,7 @@ export class App {
     app: $Application;
     constructor(params: AppParams) {
         this.app = express();
+        this.app.use(cors());
         const apiRouter = new Router();
         apiRouter.get('/', (request: $Request, response: $Response) => {
             response.json({ ok: 1 });

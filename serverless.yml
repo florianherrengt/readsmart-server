@@ -1,5 +1,18 @@
 service: readsmart
 
+plugins:
+  - serverless-prune-plugin
+
+custom: 
+  PopulatePostsSNSTopicArn:
+    Fn::Join:
+      - ""
+      - - "arn:aws:sns:"
+        - Ref: "AWS::Region"
+        - ":"
+        - Ref: "AWS::AccountId"
+        - ":${self:provider.stage}-populate-posts"
+
 provider:
   name: aws
   runtime: nodejs6.10
@@ -9,13 +22,19 @@ provider:
       - Effect: Allow
         Action:
           - s3:GetObject
+          - s3:PutObject
         Resource: "arn:aws:s3:::${self:resources.Resources.postsBucket.Properties.BucketName}/*"
+      - Effect: Allow
+        Action:
+          - sns:Publish
+        Resource: ${self:custom.PopulatePostsSNSTopicArn}
 
   environment:
     NODE_ENV: ${self:provider.stage}
     BABEL_CACHE_PATH: "/tmp/babelcache"
     POSTS_BUCKET: ${self:resources.Resources.postsBucket.Properties.BucketName}
     REGION: ${self:provider.region}
+    POPULATE_POSTS_TOPIC: ${self:custom.PopulatePostsSNSTopicArn}
 
 functions:
   ProxyApiRoot:
@@ -25,10 +44,23 @@ functions:
       - http:
           path: /{proxy+}
           method: ANY
-
+          cors: true
+  PopulatorWorker:
+    handler: src/workers/populator/lambda.handler
+    timeout: 300
+    events:
+      - sns: 
+          arn: ${self:custom.PopulatePostsSNSTopicArn}
+          topicName: ${self:provider.stage}-populate-posts
 resources: 
   Resources:
     postsBucket:
       Type: AWS::S3::Bucket
       Properties: 
         BucketName: ${self:service}-${self:provider.stage}-posts
+    populatorSNS:
+      Type: AWS::SNS::Topic
+      Properties:
+        DisplayName: When posts need to be populated with the extractor
+        TopicName: ${self:provider.stage}-populate-posts
+

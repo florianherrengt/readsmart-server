@@ -7,10 +7,10 @@ import bodyParser from 'body-parser';
 import agent from 'superagent';
 import config from '../../../config';
 import schema from './schema';
-import { s3 } from '../../common/aws';
+import { s3, sns } from '../../common/aws';
 
 import { Post as PostRepository } from '../repositories/Post';
-const postRepository = new PostRepository({ s3, agent });
+const postRepository = new PostRepository({ s3, agent, sns });
 
 export class GraphQlRouter extends Router {
     constructor(options?: RouterOptions) {

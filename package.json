@@ -1,7 +1,8 @@
 {
   "scripts": {
     "flow": "flow",
-    "deploy:dev": "sls deploy -s dev"
+    "deploy:dev": "sls deploy -s dev",
+    "prune": "sls prune -n 10"
   },
   "dependencies": {
     "aws-sdk": "^2.58.0",
@@ -15,6 +16,7 @@
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-flow": "^6.23.0",
     "body-parser": "^1.17.2",
+    "cors": "^2.8.3",
     "express": "^4.15.3",
     "graphql": "^0.10.1",
     "graphql-server-express": "^0.7.2",
@@ -29,6 +31,7 @@
   "devDependencies": {
     "flow-bin": "^0.47.0",
     "flow-typed": "^2.1.2",
-    "serverless": "^1.14.0"
+    "serverless": "^1.14.0",
+    "serverless-prune-plugin": "^1.0.4"
   }
 }

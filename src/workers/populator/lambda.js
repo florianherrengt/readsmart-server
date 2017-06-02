@@ -18,12 +18,17 @@ const populator = new Populator({
     bucket: config.aws.s3.postsBucket
 });
 
-populator({
-    url: 'https://leanpub.com/learnwebdevelopmentwithvegibit'
-})
-    .then(() => {
-        console.log('done');
-    })
-    .catch(error => {
-        console.error(error);
-    });
+// $FlowFixMe
+exports.handler = (event, context, callback) => {
+    Promise.all(
+        event.Records.map(record =>
+            Promise.all(
+                JSON.parse(record.Sns.Message).posts.map(post =>
+                    populator(post)
+                )
+            )
+        )
+    )
+        .then(() => callback())
+        .catch(error => callback(error));
+};

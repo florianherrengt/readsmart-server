@@ -13,5 +13,7 @@ AWS.config.apiVersions = config.aws.apiVersions;
 
 // $FlowFixMe
 export const s3 = new AWS.S3(config.aws.credentials);
+// $FlowFixMe
+export const sns = new AWS.SNS(config.aws.credentials);
 export const iot = new AWS.Iot();
 export const sts = new AWS.STS();

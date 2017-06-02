@@ -4,12 +4,14 @@ import md5 from 'md5';
 
 export type PostParams = {
     s3: any,
-    agent: any
+    agent: any,
+    sns: any
 };
 
 export class Post {
     s3: any;
     agent: any;
+    sns: any;
     constructor(params: PostParams) {
         Object.assign(this, params);
     }
@@ -25,11 +27,25 @@ export class Post {
                     ResponseContentType: 'application/json'
                 },
                 (error, data) => {
-                    error && console.log({ error });
                     error
                         ? reject(error)
                         : resolve(JSON.parse(data.Body.toString()));
                 }
+            );
+        });
+    }
+    _publish({ posts = [] }: { posts: any }) {
+        if (!posts.length) {
+            return Promise.resolve();
+        }
+        return new Promise((resolve, reject) => {
+            this.sns.publish(
+                {
+                    Message: JSON.stringify({ posts }),
+                    // $FlowFixMe
+                    TopicArn: config.aws.sns.topics.populatePostsTopic
+                },
+                (error, data) => (error ? reject(error) : resolve())
             );
         });
     }
@@ -48,6 +64,7 @@ export class Post {
         return posts;
     }
     async populate({ type, posts }: { type: string, posts: [] }) {
+        await this._publish({ posts });
         return await Promise.all(
             posts.map(
                 ({ url }) =>
