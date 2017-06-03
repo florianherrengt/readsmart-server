@@ -12,6 +12,20 @@ custom:
         - ":"
         - Ref: "AWS::AccountId"
         - ":${self:provider.stage}-populate-posts"
+  IotArn:
+    Fn::Join:
+      - ""
+      - - "arn:aws:iot:"
+        - Ref: "AWS::Region"
+        - ":"
+        - Ref: "AWS::AccountId"
+        - ":*"
+  IotRoleToAssume:
+    Fn::Join:
+      - ""
+      - - "arn:aws:iam::"
+        - Ref: "AWS::AccountId"
+        - ":role/serverless-notifications"
 
 provider:
   name: aws
@@ -28,6 +42,14 @@ provider:
         Action:
           - sns:Publish
         Resource: ${self:custom.PopulatePostsSNSTopicArn}
+      - Effect: Allow
+        Action:
+          - iot:*
+        Resource: "*"
+      - Effect: Allow
+        Action: 
+          - sts:*
+        Resource: ${self:custom.IotRoleToAssume}
 
   environment:
     NODE_ENV: ${self:provider.stage}

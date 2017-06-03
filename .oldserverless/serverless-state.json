@@ -1,0 +1,810 @@
+{
+  "service": {
+    "service": "readsmart",
+    "serviceObject": {
+      "name": "readsmart"
+    },
+    "provider": {
+      "stage": "dev",
+      "region": "eu-west-2",
+      "variableSyntax": "\\${([ :a-zA-Z0-9._,\\-\\/\\(\\)]+?)}",
+      "name": "aws",
+      "runtime": "nodejs6.10",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "s3:GetObject",
+            "s3:PutObject"
+          ],
+          "Resource": "arn:aws:s3:::readsmart-dev-posts/*"
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sns:Publish"
+          ],
+          "Resource": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:sns:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":dev-populate-posts"
+              ]
+            ]
+          }
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "iot:*"
+          ],
+          "Resource": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:iot:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":*"
+              ]
+            ]
+          }
+        },
+        {
+          "Effect": "Allow",
+          "Action": [
+            "sts:AssumeRole"
+          ],
+          "Resource": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:iam::",
+                {
+                  "Ref": "AWS::AccountId"
+                },
+                ":role/serverless-notifications"
+              ]
+            ]
+          }
+        }
+      ],
+      "environment": {
+        "NODE_ENV": "dev",
+        "BABEL_CACHE_PATH": "/tmp/babelcache",
+        "POSTS_BUCKET": "readsmart-dev-posts",
+        "REGION": "eu-west-2",
+        "POPULATE_POSTS_TOPIC": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:sns:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":dev-populate-posts"
+            ]
+          ]
+        }
+      },
+      "versionFunctions": true,
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          },
+          "ProxyApiRootLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/readsmart-development-ProxyApiRoot"
+            }
+          },
+          "PopulatorWorkerLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/readsmart-development-PopulatorWorker"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "development",
+                        "readsmart",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/readsmart-development-ProxyApiRoot:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/readsmart-development-PopulatorWorker:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/readsmart-development-ProxyApiRoot:*:*"
+                          },
+                          {
+                            "Fn::Sub": "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/readsmart-development-PopulatorWorker:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "s3:GetObject",
+                          "s3:PutObject"
+                        ],
+                        "Resource": "arn:aws:s3:::readsmart-dev-posts/*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "sns:Publish"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:sns:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":dev-populate-posts"
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "iot:*"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:iot:",
+                              {
+                                "Ref": "AWS::Region"
+                              },
+                              ":",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":*"
+                            ]
+                          ]
+                        }
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "sts:AssumeRole"
+                        ],
+                        "Resource": {
+                          "Fn::Join": [
+                            "",
+                            [
+                              "arn:aws:iam::",
+                              {
+                                "Ref": "AWS::AccountId"
+                              },
+                              ":role/serverless-notifications"
+                            ]
+                          ]
+                        }
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "readsmart",
+                    "development",
+                    "eu-west-2",
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "ProxyApiRootLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/readsmart/development/1496450016192-2017-06-03T00:33:36.192Z/readsmart.zip"
+              },
+              "FunctionName": "readsmart-development-ProxyApiRoot",
+              "Handler": "src/server/lambda.handler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs6.10",
+              "Timeout": 60,
+              "Environment": {
+                "Variables": {
+                  "NODE_ENV": "dev",
+                  "BABEL_CACHE_PATH": "/tmp/babelcache",
+                  "POSTS_BUCKET": "readsmart-dev-posts",
+                  "REGION": "eu-west-2",
+                  "POPULATE_POSTS_TOPIC": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:sns:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":dev-populate-posts"
+                      ]
+                    ]
+                  }
+                }
+              }
+            },
+            "DependsOn": [
+              "ProxyApiRootLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "ProxyApiRootLambdaVersion6mmKj92rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "ProxyApiRootLambdaFunction"
+              },
+              "CodeSha256": "6mmKj92+rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI="
+            }
+          },
+          "PopulatorWorkerLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": {
+                  "Ref": "ServerlessDeploymentBucket"
+                },
+                "S3Key": "serverless/readsmart/development/1496450016192-2017-06-03T00:33:36.192Z/readsmart.zip"
+              },
+              "FunctionName": "readsmart-development-PopulatorWorker",
+              "Handler": "src/workers/populator/lambda.handler",
+              "MemorySize": 1024,
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              },
+              "Runtime": "nodejs6.10",
+              "Timeout": 300,
+              "Environment": {
+                "Variables": {
+                  "NODE_ENV": "dev",
+                  "BABEL_CACHE_PATH": "/tmp/babelcache",
+                  "POSTS_BUCKET": "readsmart-dev-posts",
+                  "REGION": "eu-west-2",
+                  "POPULATE_POSTS_TOPIC": {
+                    "Fn::Join": [
+                      "",
+                      [
+                        "arn:aws:sns:",
+                        {
+                          "Ref": "AWS::Region"
+                        },
+                        ":",
+                        {
+                          "Ref": "AWS::AccountId"
+                        },
+                        ":dev-populate-posts"
+                      ]
+                    ]
+                  }
+                }
+              }
+            },
+            "DependsOn": [
+              "PopulatorWorkerLogGroup",
+              "IamRoleLambdaExecution"
+            ]
+          },
+          "PopulatorWorkerLambdaVersion6mmKj92rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "PopulatorWorkerLambdaFunction"
+              },
+              "CodeSha256": "6mmKj92+rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI="
+            }
+          },
+          "ApiGatewayRestApi": {
+            "Type": "AWS::ApiGateway::RestApi",
+            "Properties": {
+              "Name": "development-readsmart"
+            }
+          },
+          "ApiGatewayResourceProxyVar": {
+            "Type": "AWS::ApiGateway::Resource",
+            "Properties": {
+              "ParentId": {
+                "Fn::GetAtt": [
+                  "ApiGatewayRestApi",
+                  "RootResourceId"
+                ]
+              },
+              "PathPart": "{proxy+}",
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodProxyVarOptions": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "AuthorizationType": "NONE",
+              "HttpMethod": "OPTIONS",
+              "MethodResponses": [
+                {
+                  "StatusCode": "200",
+                  "ResponseParameters": {
+                    "method.response.header.Access-Control-Allow-Origin": true,
+                    "method.response.header.Access-Control-Allow-Headers": true,
+                    "method.response.header.Access-Control-Allow-Methods": true,
+                    "method.response.header.Access-Control-Allow-Credentials": true
+                  },
+                  "ResponseModels": {}
+                }
+              ],
+              "RequestParameters": {},
+              "Integration": {
+                "Type": "MOCK",
+                "RequestTemplates": {
+                  "application/json": "{statusCode:200}"
+                },
+                "IntegrationResponses": [
+                  {
+                    "StatusCode": "200",
+                    "ResponseParameters": {
+                      "method.response.header.Access-Control-Allow-Origin": "'*'",
+                      "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token,X-Amz-User-Agent'",
+                      "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,DELETE,GET,HEAD,PATCH,POST,PUT'",
+                      "method.response.header.Access-Control-Allow-Credentials": "'false'"
+                    },
+                    "ResponseTemplates": {
+                      "application/json": ""
+                    }
+                  }
+                ]
+              },
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceProxyVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              }
+            }
+          },
+          "ApiGatewayMethodProxyVarAny": {
+            "Type": "AWS::ApiGateway::Method",
+            "Properties": {
+              "HttpMethod": "ANY",
+              "RequestParameters": {},
+              "ResourceId": {
+                "Ref": "ApiGatewayResourceProxyVar"
+              },
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "AuthorizationType": "NONE",
+              "Integration": {
+                "IntegrationHttpMethod": "POST",
+                "Type": "AWS_PROXY",
+                "Uri": {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:apigateway:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":lambda:path/2015-03-31/functions/",
+                      {
+                        "Fn::GetAtt": [
+                          "ProxyApiRootLambdaFunction",
+                          "Arn"
+                        ]
+                      },
+                      "/invocations"
+                    ]
+                  ]
+                }
+              },
+              "MethodResponses": []
+            }
+          },
+          "ApiGatewayDeployment1496450016381": {
+            "Type": "AWS::ApiGateway::Deployment",
+            "Properties": {
+              "RestApiId": {
+                "Ref": "ApiGatewayRestApi"
+              },
+              "StageName": "development"
+            },
+            "DependsOn": [
+              "ApiGatewayMethodProxyVarAny"
+            ]
+          },
+          "ProxyApiRootLambdaPermissionApiGateway": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "ProxyApiRootLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "apigateway.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:execute-api:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":",
+                    {
+                      "Ref": "ApiGatewayRestApi"
+                    },
+                    "/*/*"
+                  ]
+                ]
+              }
+            }
+          },
+          "PopulatorWorkerSnsSubscriptionDevpopulateposts": {
+            "Type": "AWS::SNS::Subscription",
+            "Properties": {
+              "TopicArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:sns:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":dev-populate-posts"
+                  ]
+                ]
+              },
+              "Protocol": "lambda",
+              "Endpoint": {
+                "Fn::GetAtt": [
+                  "PopulatorWorkerLambdaFunction",
+                  "Arn"
+                ]
+              }
+            }
+          },
+          "PopulatorWorkerLambdaPermissionDevpopulatepostsSNS": {
+            "Type": "AWS::Lambda::Permission",
+            "Properties": {
+              "FunctionName": {
+                "Fn::GetAtt": [
+                  "PopulatorWorkerLambdaFunction",
+                  "Arn"
+                ]
+              },
+              "Action": "lambda:InvokeFunction",
+              "Principal": "sns.amazonaws.com",
+              "SourceArn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:sns:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":dev-populate-posts"
+                  ]
+                ]
+              }
+            }
+          },
+          "postsBucket": {
+            "Type": "AWS::S3::Bucket",
+            "Properties": {
+              "BucketName": "readsmart-dev-posts"
+            }
+          },
+          "populatorSNS": {
+            "Type": "AWS::SNS::Topic",
+            "Properties": {
+              "DisplayName": "When posts need to be populated with the extractor",
+              "TopicName": "dev-populate-posts"
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          },
+          "ProxyApiRootLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "ProxyApiRootLambdaVersion6mmKj92rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI"
+            }
+          },
+          "PopulatorWorkerLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "PopulatorWorkerLambdaVersion6mmKj92rtdLGVTGfwXF1nYuhqunWHzlIo29dSdi7EI"
+            }
+          },
+          "ServiceEndpoint": {
+            "Description": "URL of the service endpoint",
+            "Value": {
+              "Fn::Join": [
+                "",
+                [
+                  "https://",
+                  {
+                    "Ref": "ApiGatewayRestApi"
+                  },
+                  ".execute-api.eu-west-2.amazonaws.com/development"
+                ]
+              ]
+            }
+          }
+        }
+      },
+      "coreCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "ServerlessDeploymentBucket": {
+            "Type": "AWS::S3::Bucket"
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": {
+              "Ref": "ServerlessDeploymentBucket"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "custom": {
+      "PopulatePostsSNSTopicArn": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:sns:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":dev-populate-posts"
+          ]
+        ]
+      },
+      "IotArn": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:iot:",
+            {
+              "Ref": "AWS::Region"
+            },
+            ":",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":*"
+          ]
+        ]
+      },
+      "IotRoleToAssume": {
+        "Fn::Join": [
+          "",
+          [
+            "arn:aws:iam::",
+            {
+              "Ref": "AWS::AccountId"
+            },
+            ":role/serverless-notifications"
+          ]
+        ]
+      }
+    },
+    "plugins": [
+      "serverless-prune-plugin"
+    ],
+    "functions": {
+      "ProxyApiRoot": {
+        "handler": "src/server/lambda.handler",
+        "timeout": 60,
+        "events": [
+          {
+            "http": {
+              "path": "{proxy+}",
+              "method": "any",
+              "cors": {
+                "origins": [
+                  "*"
+                ],
+                "methods": [
+                  "OPTIONS",
+                  "ANY"
+                ],
+                "headers": [
+                  "Content-Type",
+                  "X-Amz-Date",
+                  "Authorization",
+                  "X-Api-Key",
+                  "X-Amz-Security-Token",
+                  "X-Amz-User-Agent"
+                ],
+                "allowCredentials": false
+              },
+              "integration": "AWS_PROXY"
+            }
+          }
+        ],
+        "name": "readsmart-development-ProxyApiRoot",
+        "package": {},
+        "vpc": {}
+      },
+      "PopulatorWorker": {
+        "handler": "src/workers/populator/lambda.handler",
+        "timeout": 300,
+        "events": [
+          {
+            "sns": {
+              "arn": {
+                "Fn::Join": [
+                  "",
+                  [
+                    "arn:aws:sns:",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    ":",
+                    {
+                      "Ref": "AWS::AccountId"
+                    },
+                    ":dev-populate-posts"
+                  ]
+                ]
+              },
+              "topicName": "dev-populate-posts"
+            }
+          }
+        ],
+        "name": "readsmart-development-PopulatorWorker",
+        "package": {},
+        "vpc": {}
+      }
+    },
+    "resources": {
+      "Resources": {
+        "postsBucket": {
+          "Type": "AWS::S3::Bucket",
+          "Properties": {
+            "BucketName": "readsmart-dev-posts"
+          }
+        },
+        "populatorSNS": {
+          "Type": "AWS::SNS::Topic",
+          "Properties": {
+            "DisplayName": "When posts need to be populated with the extractor",
+            "TopicName": "dev-populate-posts"
+          }
+        }
+      },
+      "Outputs": {}
+    },
+    "artifact": "/Users/florianherrengt/projects/readsmart-server/.serverless/readsmart.zip"
+  },
+  "package": {
+    "artifactDirectoryName": "serverless/readsmart/development/1496450016192-2017-06-03T00:33:36.192Z",
+    "artifact": "readsmart.zip"
+  }
+}

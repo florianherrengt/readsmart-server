@@ -1,4 +1,5 @@
 // @flow
+console.log(process.env);
 import express, { Router } from 'express';
 import type { $Application, $Request, $Response } from 'express';
 import cors from 'cors';

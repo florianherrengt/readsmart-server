@@ -64,18 +64,23 @@ export class Post {
         return posts;
     }
     async populate({ type, posts }: { type: string, posts: [] }) {
-        await this._publish({ posts });
-        return await Promise.all(
+        const populatedPosts = await Promise.all(
             posts.map(
-                ({ url }) =>
+                ({ title, url }) =>
                     new Promise((resolve, reject) => {
                         this.getByKey(`${md5(url)}`)
                             .then(post =>
                                 resolve({ ...post, isLoading: false })
                             )
-                            .catch(() => resolve({ url, isLoading: true }));
+                            .catch(() =>
+                                resolve({ title, url, isLoading: true })
+                            );
                     })
             )
         );
+        await this._publish({
+            posts: populatedPosts.filter(({ isLoading }) => isLoading)
+        });
+        return populatedPosts;
     }
 }

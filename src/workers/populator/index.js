@@ -25,6 +25,7 @@ export class Populator {
         }, '');
         body.text = body.text.split('. ').join('.\n\n');
         body.id = key;
+        body.created_at = new Date();
         return new Promise((resolve, reject) => {
             this.s3.putObject(
                 {
@@ -39,13 +40,14 @@ export class Populator {
             );
         });
     }
-    async _populate(params: { url: string }) {
+    async _populate(params: { url: string, title: string }) {
         const { extractorUrl } = config;
         if (!extractorUrl) {
             throw new Error('config.extractorUrl is undefined');
         }
-        const { url } = params;
+        const { url, title } = params;
         const { body } = await this.agent.get(`${extractorUrl}?url=${url}`);
+        body.title = title || body.title;
         await this._saveToS3(body);
     }
 }

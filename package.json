@@ -1,7 +1,8 @@
 {
   "scripts": {
     "flow": "flow",
-    "deploy:dev": "sls deploy -s dev",
+    "test": "jest src",
+    "deploy:dev": "sls deploy -s development",
     "prune": "sls prune -n 10"
   },
   "dependencies": {
@@ -22,6 +23,7 @@
     "graphql-server-express": "^0.7.2",
     "graphql-tools": "^1.0.0",
     "lodash": "^4.17.4",
+    "lodash.throttle": "^4.1.1",
     "md5": "^2.2.1",
     "passport": "^0.3.2",
     "pg": "^6.2.3",
@@ -31,6 +33,7 @@
   "devDependencies": {
     "flow-bin": "^0.47.0",
     "flow-typed": "^2.1.2",
+    "jest": "^20.0.4",
     "serverless": "^1.14.0",
     "serverless-prune-plugin": "^1.0.4"
   }

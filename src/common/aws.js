@@ -15,5 +15,14 @@ AWS.config.apiVersions = config.aws.apiVersions;
 export const s3 = new AWS.S3(config.aws.credentials);
 // $FlowFixMe
 export const sns = new AWS.SNS(config.aws.credentials);
-export const iot = new AWS.Iot();
-export const sts = new AWS.STS();
+// $FlowFixMe
+export const iot = new AWS.Iot(config.aws.credentials);
+
+export let iotData = new AWS.IotData({
+    endpoint: 'aqe9yfh30d9cw.iot.eu-west-2.amazonaws.com',
+    // $FlowFixMe
+    ...config.aws.credentials
+});
+
+// $FlowFixMe
+export const sts = new AWS.STS(config.aws.credentials);

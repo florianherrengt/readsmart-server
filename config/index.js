@@ -59,7 +59,7 @@ const extendedEnv: Config = merge(selectedEnv, {
         sns: {
             topics: {
                 populatePostsTopic: process.env.POPULATE_POSTS_TOPIC ||
-                    'dev-populate-posts-worker'
+                    'dev-populate-posts'
             }
         }
     }
