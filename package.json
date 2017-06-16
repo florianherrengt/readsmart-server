@@ -3,7 +3,8 @@
     "flow": "flow",
     "test": "jest src",
     "deploy:dev": "sls deploy -s development",
-    "prune": "sls prune -n 10"
+    "prune": "sls prune -n 10",
+    "prepush": "npm-run-all -p flow lint test"
   },
   "dependencies": {
     "aws-sdk": "^2.58.0",
@@ -27,10 +28,12 @@
     "graphql-server-express": "^0.7.2",
     "graphql-subscriptions": "^0.4.2",
     "graphql-tools": "^1.0.0",
+    "husky": "^0.13.4",
     "lodash": "^4.17.4",
     "lodash.throttle": "^4.1.1",
     "md5": "^2.2.1",
     "moment": "^2.18.1",
+    "npm-run-all": "^4.0.2",
     "passport": "^0.3.2",
     "passport-twitter": "^1.0.4",
     "pg": "^6.2.4",
