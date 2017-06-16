@@ -8,8 +8,7 @@ export class IotManager {
     region: string;
     constructor(params: { iot: any, sts: any }) {
         Object.assign(this, params, {
-            // $FlowFixMe
-            region: config.aws.region
+            region: config.aws.region,
         });
     }
     getCredentials() {
@@ -42,17 +41,17 @@ export class IotManager {
                             {
                                 Action: ['iot:Connect', 'iot:Receive'],
                                 Resource: '*',
-                                Effect: 'Allow'
+                                Effect: 'Allow',
                             },
                             {
                                 Effect: 'Allow',
                                 Action: ['iot:Subscribe'],
-                                Resource: `arn:aws:iot:eu-west-2:${Account}:topicfilter/*`
-                            }
-                        ]
+                                Resource: `arn:aws:iot:eu-west-2:${Account}:topicfilter/*`,
+                            },
+                        ],
                     }),
                     RoleArn: `arn:aws:iam::${Account}:role/${ROLE_NAME}`,
-                    RoleSessionName: Math.random().toString()
+                    RoleSessionName: Math.random().toString(),
                 };
                 return new Promise((resolve, reject) => {
                     this.sts.assumeRole(params, (err, data) => {
@@ -60,17 +59,13 @@ export class IotManager {
                             console.log(err);
                             return reject(err);
                         }
-                        const {
-                            AccessKeyId,
-                            SecretAccessKey,
-                            SessionToken
-                        } = data.Credentials;
+                        const { AccessKeyId, SecretAccessKey, SessionToken } = data.Credentials;
                         resolve({
                             iotEndpoint: endpointAddress,
                             region: this.region,
                             accessKeyId: AccessKeyId,
                             secretKey: SecretAccessKey,
-                            sessionToken: SessionToken
+                            sessionToken: SessionToken,
                         });
                     });
                 });
