@@ -5,8 +5,11 @@ import { merge } from 'lodash';
 import { development } from './development';
 import { production } from './production';
 import { test } from './test';
-// $FlowFixMe
-const local = fs.existsSync(path.join(__dirname, './local.js')) ? require('./local').local : {};
+
+const local = fs.existsSync(path.join(__dirname, '/local.js'))
+    ? // $FlowFixMe
+      require(path.join(__dirname + '/local.js')).local
+    : {};
 
 export type Config = {
     postgres: string,
