@@ -1,6 +1,7 @@
 // @flow
 import config from '../../../config';
-import moment, { Moment } from 'moment';
+// import moment from 'moment';
+// import type { Moment } from 'moment';
 import { redisClient } from '../../common/redis';
 import { pubsub, POST_ADDED } from '../../common/pubsub';
 import md5 from 'md5';
