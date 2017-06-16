@@ -1,7 +1,11 @@
 // @flow
 require('babel-core/register');
-const { app } = require('./index');
+const { app, createSubscriptionServer } = require('./index');
+const { createServer } = require('http');
 
-app.listen(8000, () => {
+const server = createServer(app);
+
+server.listen(8000, () => {
+    createSubscriptionServer(server);
     console.log('Server listening on port 8000');
 });

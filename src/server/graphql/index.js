@@ -1,9 +1,18 @@
 // @flow
 import { GraphQlRouter } from './router';
-import { Post } from '../repositories/Post';
+import { PostRepository } from '../repositories/Post';
+import { UserRepositoty } from '../repositories/User';
 
 export type Context = {
-    postRepository: Post
+    postRepository: PostRepository,
+    userRepository: UserRepositoty,
+    session: {
+        passport?: {
+            user: {
+                username: string,
+            },
+        },
+    },
 };
 
 export { GraphQlRouter };

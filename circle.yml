@@ -1,6 +1,8 @@
 machine:
   node:
     version: 6.1.0
+  services:
+    - redis
 
 dependencies:
   override:
@@ -12,6 +14,7 @@ test:
   override:
     - yarn run flow
     - node src/server/lambda.js
+    - yarn test
 
 deployment:
   branch: master

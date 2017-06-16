@@ -17,16 +17,16 @@ const populator = new Populator({
     s3,
     iotData,
     agent,
-    bucket: config.aws.s3.postsBucket
+    bucket: config.aws.s3.postsBucket,
 });
 
-const publish = throttle(() => {
+const publish = () => {
     return new Promise((resolve, reject) => {
         iotData.publish({ topic: 'newsource' }, error => {
             error ? reject(error) : resolve();
         });
     });
-}, 1000);
+};
 
 // $FlowFixMe
 exports.handler = (event, context, callback) => {
@@ -36,11 +36,12 @@ exports.handler = (event, context, callback) => {
             if (!posts.length) {
                 return Promise.resolve();
             }
-            return Promise.all(
-                posts.map(post => populator(post).then(() => publish()))
-            );
-        })
+            return Promise.all(posts.map(post => populator(post).then(() => publish())));
+        }),
     )
-        .then(() => callback())
+        .then(() => publish())
+        .then(() => {
+            callback();
+        })
         .catch(error => callback(error));
 };

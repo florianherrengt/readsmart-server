@@ -1,7 +1,12 @@
 // @flow
 import type { Config } from './index';
-const DATABASE_URL = process.env.DATABASE_URL;
+const { DATABASE_URL, REDIS_URL } = process.env;
+import { defaultEnv } from './default';
 
 export const production: Config = {
-    postgres: DATABASE_URL || ''
+    ...defaultEnv,
+    postgres: DATABASE_URL || '',
+    redis: REDIS_URL || '',
+    apiUrl: `http://localhost:${process.env.PORT || '8000'}`,
+    clientUrl: 'http://localhost:3000',
 };
