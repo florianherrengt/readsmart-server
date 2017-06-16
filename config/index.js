@@ -1,12 +1,11 @@
 // @flow
 import fs from 'fs';
 import path from 'path';
-const local = fs.existsSync(path.join(__dirname, './local.js')) ? require('./local').local : {};
 import { merge } from 'lodash';
 import { development } from './development';
 import { production } from './production';
 import { test } from './test';
-// import { local } from './local';
+const local = fs.existsSync(path.join(__dirname, './local.js')) ? require('./local').local : {};
 
 export type Config = {
     postgres: string,
