@@ -13,7 +13,6 @@ dependencies:
 test:
   override:
     - yarn run flow
-    - node src/server/lambda.js
     - yarn test:ci
 
 deployment:
