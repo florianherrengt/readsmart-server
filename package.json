@@ -3,9 +3,10 @@
     "flow": "flow",
     "lint": "eslint src",
     "test": "jest src",
+    "test:ci": "yarn run test -- --lastCommit=false -b --forceExit",
     "deploy:dev": "sls deploy -s development",
     "prune": "sls prune -n 10",
-    "prepush": "NODE_ENV=local npm-run-all -p flow lint test"
+    "prepush": "NODE_ENV=local npm-run-all -p flow lint test:ci"
   },
   "dependencies": {
     "aws-sdk": "^2.58.0",
