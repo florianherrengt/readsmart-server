@@ -14,9 +14,3 @@ test:
   override:
     - yarn run flow
     - yarn test:ci
-
-deployment:
-  branch: master
-  commands:
-    - yarn run deploy:dev
-    - yarn run prune
