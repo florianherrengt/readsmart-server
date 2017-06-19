@@ -33,11 +33,11 @@ export class TwitterStrategy extends Strategy {
                                 token,
                                 tokenSecret,
                                 profile,
-                                userId: createdUser.get({ plain: true }).id,
+                                userId: createdUser.toJSON().id,
                             },
                             { transaction },
                         );
-                        done(null, createdUser.get({ plain: true }));
+                        done(null, createdUser.toJSON());
                     });
                 } catch (error) {
                     done(error);

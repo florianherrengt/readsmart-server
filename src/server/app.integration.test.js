@@ -1,7 +1,8 @@
+// @flow
 import supertest from 'supertest';
-import { App } from './app';
+import { sequelize } from '../common/models';
+import { app } from './index';
 
-const app = new App();
 const agent = supertest.agent(app);
 
 describe('The root app', () => {

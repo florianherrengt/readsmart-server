@@ -1,5 +1,4 @@
 // @flow
-console.log(process.env);
 import config from '../../config';
 import express, { Router } from 'express';
 import type { $Application, $Request, $Response } from 'express';
@@ -8,13 +7,16 @@ import passport from 'passport';
 import session from 'express-session';
 import ConnectRedis from 'connect-redis';
 const RedisStore = ConnectRedis(session);
-import { UserModel } from '../common/models';
 
 import { GraphQlRouter } from './graphql/router';
 
 import { PassportRouter } from './passport';
 
-export type AppParams = {};
+import type { $repositories } from './index';
+
+export type AppParams = {
+    repositories: $repositories,
+};
 
 class StatusRouter extends Router {
     constructor(options) {
@@ -41,10 +43,9 @@ export class App {
         );
         this.app.use(passport.initialize());
         this.app.use(passport.session());
-        const apiRouter = new Router();
         const rootRouter = new Router();
         this.app.use('/status', new StatusRouter());
-        this.app.use(new GraphQlRouter());
+        this.app.use(new GraphQlRouter(params.repositories));
         this.app.use(new PassportRouter());
         rootRouter.all('*', (request: $Request, response: $Response) => {
             response.status(404).json({ error: 'NotFound' });

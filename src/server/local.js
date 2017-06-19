@@ -1,6 +1,8 @@
 // @flow
 require('babel-core/register');
 const { app, createSubscriptionServer } = require('./index');
+const models = require('../common/models');
+models.sync();
 const { createServer } = require('http');
 
 const server = createServer(app);
