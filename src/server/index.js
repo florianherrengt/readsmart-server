@@ -4,8 +4,9 @@ import { App } from './app';
 import { SubscriptionServer } from 'subscriptions-transport-ws';
 import schema from './graphql/schema';
 import { execute, subscribe } from 'graphql';
+import { pubsub } from '../common/pubsub';
 
-import agent from 'superagent';
+import fetch from 'node-fetch';
 
 import { sequelize, SourceModel, TwitterIdentityModel, UserModel, sync } from '../common/models';
 
@@ -20,7 +21,7 @@ export type $repositories = {
 };
 
 export const repositories = {
-    postRepository: new PostRepository({ redisClient, agent }),
+    postRepository: new PostRepository({ redisClient, fetch, pubsub }),
     userRepository: new UserRepository({ UserModel }),
     sourceRepository: new SourceRepository({ SourceModel }),
 };

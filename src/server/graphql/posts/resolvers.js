@@ -25,7 +25,7 @@ export const resolvers = {
             subscribe: withFilter(
                 () => pubsub.asyncIterator(POST_ADDED),
                 (payload, variables, context) => {
-                    console.log(context);
+                    console.log(payload, variables, context);
                     return true;
                 },
             ),

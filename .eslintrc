@@ -1,6 +1,19 @@
 {
-    "extends": "react-app",
+    "extends": ["react-app", "prettier"],
+    "plugins": ["prettier"],
     "rules": {
-        "import/first": 0
+        "import/first": 0,
+        "prettier/prettier": ["error", {
+          printWidth: 120,
+          tabWidth: 4,
+          singleQuote: true,
+          trailingComma: 'all',
+          bracketSpacing: true,
+          semi: true,
+          useTabs: false,
+          parser: 'flow',
+          jsxBracketSameLine: false,
+        }],
+        "indent": ["error", 4]
     }
 }

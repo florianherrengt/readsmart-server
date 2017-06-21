@@ -2,12 +2,13 @@
 require('babel-core/register');
 const { app, createSubscriptionServer } = require('./index');
 const models = require('../common/models');
-models.sync();
-const { createServer } = require('http');
+models.sync().then(() => {
+    const { createServer } = require('http');
 
-const server = createServer(app);
+    const server = createServer(app);
 
-server.listen(8000, () => {
-    createSubscriptionServer(server);
-    console.log('Server listening on port 8000');
+    server.listen(8000, () => {
+        createSubscriptionServer(server);
+        console.log('Server listening on port 8000');
+    });
 });

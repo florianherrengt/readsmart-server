@@ -1,15 +1,15 @@
 // @flow
 import config from '../../../config';
-// import moment from 'moment';
-// import type { Moment } from 'moment';
+import nodeFetch from 'node-fetch';
 import { redisClient as $redisClient } from '../../common/redis';
-import superagent from 'superagent';
-import { pubsub, POST_ADDED } from '../../common/pubsub';
+import { PubSub } from 'graphql-subscriptions';
+import { POST_ADDED } from '../../common/pubsub';
 import md5 from 'md5';
 
 export type PostParams = {
     redisClient: $redisClient,
-    agent: superagent,
+    fetch: nodeFetch,
+    pubsub: PubSub,
 };
 
 export type Post = {
@@ -20,83 +20,67 @@ export type Post = {
 
 export class PostRepository {
     redisClient: $redisClient;
-    agent: superagent;
+    fetch: nodeFetch;
+    pubsub: PubSub;
     constructor(params: PostParams) {
         Object.assign(this, params);
     }
-    // getByKey(Key: string) {
-    //     return new Promise((resolve, reject) => {
-    //         if (!config.aws || !config.aws.s3 || !config.aws.s3.postsBucket) {
-    //             throw new Error('config.aws.s3.postsBucket is required');
-    //         }
-    //         this.s3.getObject(
-    //             {
-    //                 Bucket: config.aws.s3.postsBucket,
-    //                 Key: `${Key}.json`,
-    //                 ResponseContentType: 'application/json',
-    //             },
-    //             (error, data) => {
-    //                 error ? reject(error) : resolve(JSON.parse(data.Body.toString()));
-    //             },
-    //         );
-    //     });
-    // }
     async _fetch(post: Post) {
-        console.log('fetching', post.url);
-        const id = md5(post.url);
         console.log(post);
+        const id = md5(post.url);
         const extractorUrl = config.extractorUrl || '';
-        const { body } = await this.agent.get(`${extractorUrl}?url=${post.url}`);
-        const textAsArray = body.text.split('. ').filter(t => t);
-        body.short_text = textAsArray.reduce((result, t) => {
+        const response = await this.fetch(`${extractorUrl}?url=${post.url}`, {
+            headers: {
+                Accept: 'application/json',
+            },
+        }).then(response => response.json());
+        const textAsArray = response.text.split('. ').filter(t => t);
+        response.short_text = textAsArray.reduce((result, t) => {
             if (result.length > 200) return result;
             return result + t + '\n\n';
         }, '');
-        Object.assign(body, {
+        response.text += '\n\n';
+        Object.assign(response, {
             id,
-            text: body.text.split('. ').join('.\n\n'),
+            text: response.text.split('. ').join('.\n\n'),
             created_at: post.created_at ? new Date(post.created_at) : new Date(),
         });
-        this.redisClient.set(id, JSON.stringify(body));
-        this.redisClient.expire(id, 3600 * 24 * 3);
-        pubsub.publish(POST_ADDED, { [POST_ADDED]: body });
+        this.redisClient.set(id, JSON.stringify(response), 'EX', 3600 * 24 * 3);
+        // this.redisClient.expire(id, 3600 * 24 * 3);
+        this.pubsub.publish(POST_ADDED, { [POST_ADDED]: response });
     }
     async getReddit(sub: string) {
         const postsFromCache = await this.redisClient.getAsync(`reddit:posts:${sub}`);
         if (postsFromCache) {
-            console.log('reddit posts from cache');
-            console.log(JSON.parse(postsFromCache));
             return JSON.parse(postsFromCache);
         }
         console.log('fetching reddit');
-        const response = await this.agent
-            .get(`https://www.reddit.com/r/${sub}.json`)
-            .set('Accept', 'application/json')
-            .set('User-Agent', 'readsmart-api');
-        const { body: { data: { children: rawPosts } } } = response;
+        const response = await this.fetch(`https://www.reddit.com/r/${sub}.json`, {
+            headers: {
+                Accept: 'application/json',
+                'User-Agent': 'readsmart-api',
+            },
+        }).then(response => response.json());
+        const { data: { children: rawPosts } } = response;
         const posts = rawPosts
             .filter(({ data: { distinguished } }) => distinguished !== 'moderator')
-            .map(({ data: { url, title, ups, created: created_at } }) => ({ url, title, ups, created_at }))
-            .filter(({ url }) => url)
-            .sort(function(a, b) {
-                var keyA = new Date(a.created_at), keyB = new Date(b.created_at);
-                if (keyA < keyB) return -1;
-                if (keyA > keyB) return 1;
-                return 0;
-            });
-        this.redisClient.set(`reddit:posts:${sub}`, JSON.stringify(posts));
-        this.redisClient.expire('reddit:posts', 60 * 30);
+            .map(({ data: { url, title, ups, created: created_at } }) => ({
+                id: md5(url),
+                url,
+                title,
+                ups,
+                created_at,
+            }))
+            .filter(({ url }) => url);
+        this.redisClient.set(`reddit:posts:${sub}`, JSON.stringify(posts), 'EX', 60 * 30);
         return posts;
     }
-    async populate({ type, posts }: { type: string, posts: [] }) {
+    async populate({ type, posts }: { type: string, posts: any[] }) {
         const populatedPosts = await Promise.all(
-            posts.map(
-                ({ title, url }) =>
-                    new Promise((resolve, reject) => {
-                        this.redisClient.getAsync(`${md5(url)}`).then(post => {
-                            return resolve({ ...JSON.parse(post), title, url, isLoading: !post });
-                        });
-                    }),
+            posts.map(({ title, url }) =>
+                this.redisClient
+                    .getAsync(`${md5(url)}`)
+                    .then(post => ({ ...JSON.parse(post), id: md5(url), title, url, isLoading: !post })),
             ),
         );
         populatedPosts.filter(({ isLoading }) => isLoading).map(post => this._fetch(post));
