@@ -59,4 +59,3 @@ export class App {
         return this.app;
     }
 }
-

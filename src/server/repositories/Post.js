@@ -26,7 +26,6 @@ export class PostRepository {
         Object.assign(this, params);
     }
     async _fetch(post: Post) {
-        console.log(post);
         const id = md5(post.url);
         const extractorUrl = config.extractorUrl || '';
         const response = await this.fetch(`${extractorUrl}?url=${post.url}`, {

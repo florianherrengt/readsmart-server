@@ -92,7 +92,7 @@ describe('The Post repository', () => {
             isLoading: true,
         });
     });
-    it.only('should fetch and publish the new post', async () => {
+    it('should fetch and publish the new post', async () => {
         const post = {
             title: 'not cached',
             url: 'http://notcached.com',
