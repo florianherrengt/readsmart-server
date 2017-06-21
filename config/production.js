@@ -7,6 +7,6 @@ export const production: Config = {
     ...defaultEnv,
     postgres: DATABASE_URL || '',
     redis: REDIS_URL || '',
-    apiUrl: `http://localhost:${process.env.PORT || '8000'}`,
-    clientUrl: 'http://localhost:3000',
+    apiUrl: 'https://readsmart.herokuapp.com',
+    clientUrl: 'http://readsmart.s3-website.eu-west-2.amazonaws.com',
 };
