@@ -8,5 +8,5 @@ export const schema = [
         secretKey: String
         sessionToken: String
     }
-`
+`,
 ];

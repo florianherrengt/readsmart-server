@@ -5,7 +5,7 @@ import md5 from 'md5';
 export type Params = {
     s3: any,
     agent: any,
-    bucket: string
+    bucket: string,
 };
 
 export class Populator {
@@ -32,11 +32,11 @@ export class Populator {
                     Bucket: this.bucket,
                     Key: key,
                     Body: JSON.stringify(body),
-                    ContentType: 'application/json'
+                    ContentType: 'application/json',
                 },
                 error => {
                     error ? reject(error) : resolve();
-                }
+                },
             );
         });
     }

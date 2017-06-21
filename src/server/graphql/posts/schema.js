@@ -25,5 +25,5 @@ export const schema = [
         # True is this post has been sent to the queue to be processed
         isLoading: Boolean
     }
-`
+`,
 ];

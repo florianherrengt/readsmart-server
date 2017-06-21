@@ -37,7 +37,12 @@ export class App {
                 secret: 'secret',
                 resave: true,
                 saveUninitialized: true,
-                cookie: { path: '/', httpOnly: true, secure: false, maxAge: null },
+                cookie: {
+                    path: '/',
+                    httpOnly: true,
+                    secure: false,
+                    maxAge: null,
+                },
                 store: new RedisStore({ url: config.redis }),
             }),
         );
@@ -54,3 +59,4 @@ export class App {
         return this.app;
     }
 }
+

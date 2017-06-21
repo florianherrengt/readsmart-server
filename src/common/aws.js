@@ -16,7 +16,7 @@ export const iot = new AWS.Iot(config.aws.credentials);
 
 export let iotData = new AWS.IotData({
     endpoint: 'aqe9yfh30d9cw.iot.eu-west-2.amazonaws.com',
-    ...config.aws.credentials
+    ...config.aws.credentials,
 });
 
 export const sts = new AWS.STS(config.aws.credentials);

@@ -9,6 +9,6 @@ export const resolvers = {
     Query: {
         async iotConnection(root: any, args: any, context: Context) {
             return await iotManager.getCredentials();
-        }
-    }
+        },
+    },
 };
