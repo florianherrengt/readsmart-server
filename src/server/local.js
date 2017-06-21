@@ -1,5 +1,6 @@
 // @flow
 require('babel-core/register');
+const config = require('../../config');
 const { app, createSubscriptionServer } = require('./index');
 const models = require('../common/models');
 models.sync().then(() => {
@@ -7,7 +8,7 @@ models.sync().then(() => {
 
     const server = createServer(app);
 
-    server.listen(8000, () => {
+    server.listen(process.env.PORT || 8000, () => {
         createSubscriptionServer(server);
         console.log('Server listening on port 8000');
     });
